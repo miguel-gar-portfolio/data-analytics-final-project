@@ -1,0 +1,160 @@
+{
+  "name": "final proyect workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "52d6607d-3a25-43be-89ba-bce5db53c637",
+      "name": "When clicking \"Execute Workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -300,
+        599
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fileFormat": "csv",
+        "options": {
+          "headerRow": true
+        }
+      },
+      "id": "16c7a4f7-0389-41ed-aae2-86b05feb3ad5",
+      "name": "Import CSV",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "position": [
+        100,
+        599
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "https://file.io/5odvqqLqxlwj",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "6b5da1f5-6d7b-4e61-b636-43a6a72e96f4",
+      "name": "Download CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -80,
+        600
+      ],
+      "typeVersion": 4.1
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": {
+          "__rl": true,
+          "value": "mreid",
+          "mode": "list",
+          "cachedResultName": "mreid"
+        },
+        "options": {}
+      },
+      "id": "2ab68cee-c64f-4be3-bcdd-1d6baf15134f",
+      "name": "MySQL",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        480,
+        600
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "jMmD0SVFmgHsZl0l",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ebc1c324-b2f2-4978-8298-222e5cd72591",
+              "name": "PrimaryKey",
+              "value": "={{ $json.iso3_o + $json.iso3_d + $json.year + $json.naics2 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "500e3afb-3cb0-448d-919b-bcc6da5716a4",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        300,
+        600
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Import CSV": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CSV": {
+      "main": [
+        [
+          {
+            "node": "Import CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking \"Execute Workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Download CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "MySQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "81977ba2-fdf8-489f-a2a7-504b83aa4251",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0bc25a47fc5e50fa679873c8583701114e553e05d40f5ff4f096b0e1789ed0d8"
+  },
+  "id": "q4HeveCdYFJVAUnF",
+  "tags": []
+}
